@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { products, formatUsd, type Product } from '../data/products';
 import { useCart } from '../store/cart';
 import ProductArt from '../components/ProductArt';
+import { event } from '../lib/heronsignal';
 
 function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -10,6 +11,7 @@ function ProductCard({ product }: { product: Product }) {
 
   const onAdd = () => {
     add(product.id);
+    event('cart_item_added', { product_id: product.id, price: product.price });
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1200);
   };

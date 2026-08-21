@@ -6,21 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fjord Supply Co.</title>
 
-    <!--
-      ============================================================
-      HeronSignal tracking snippet goes here.
-      Paste your real snippet from the HeronSignal install page,
-      then set your site key. This is what feeds RUM, frontend
-      error tracking, session replay, and anomaly detection.
-
-      Example (replace with your actual snippet + key):
-
-      <script
-        async
-        src="https://cdn.heronsignal.com/hs.js"
-        data-site-key="YOUR_SITE_KEY"></script>
-      ============================================================
-    -->
+    <!-- HeronSignal: RUM, frontend errors, session replay, anomaly detection. -->
+    <script>
+      window.heronsignalConfig = {
+        publicKey: "pk_jrvvh4TXU6-c6VbjpqYMlY-Z50auIYv8"
+      };
+    </script>
+    <script src="https://api.heronsignal.com/tracker.js" async></script>
   </head>
   <body>
     <div id="root"></div>

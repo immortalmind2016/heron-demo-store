@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../store/cart';
 import { formatUsd } from '../data/products';
-import { processPayment, CardDeclinedError } from '../lib/payment';
+import { processPayment, CardDeclinedError, getFailureMode } from '../lib/payment';
+import { event, log } from '../lib/heronsignal';
 
 const SHIPPING = 6;
 
@@ -33,8 +34,10 @@ export default function Checkout() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    event('checkout_started', { method: 'card', items: count });
     try {
       const result = await processPayment({ email, total, items: count });
+      event('checkout_completed', { method: 'card', items: count, value: total });
       clear();
       navigate('/confirmation', {
         state: { orderId: result.orderId, total, email },
@@ -42,11 +45,25 @@ export default function Checkout() {
     } catch (err) {
       if (err instanceof CardDeclinedError) {
         // Handled decline: show it cleanly, nothing is "broken".
+        event('checkout_payment_failed', { method: 'card', reason: 'card_declined' });
+        log('warn', 'Checkout payment declined', {
+          reason: 'card_declined',
+          items: count,
+        });
         setError(err.message);
       } else {
         // Unexpected failure. Show a broken-checkout state to the customer AND
         // surface the real error out-of-band so window.onerror / HeronSignal
         // captures the stack. This is the moment the demo is about.
+        event('checkout_payment_failed', {
+          method: 'card',
+          reason: 'unexpected_error',
+        });
+        log('error', 'Checkout payment failed', {
+          reason: 'unexpected_error',
+          failure_mode: getFailureMode(),
+          items: count,
+        });
         setError('Something went wrong processing your payment. Please try again.');
         window.setTimeout(() => {
           throw err;

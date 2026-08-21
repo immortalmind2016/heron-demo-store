@@ -16,11 +16,29 @@ npm run dev
 
 Opens on http://localhost:5173.
 
-## Install HeronSignal
+## HeronSignal
 
-Paste your tracking snippet into [`index.html`](index.html) where the
-`HeronSignal tracking snippet goes here` comment is, and set your site key. That
-feeds RUM, frontend error tracking, session replay, and anomaly detection.
+Installed. The tracking snippet sits in [`index.html`](index.html) with the
+public key `pk_jrvvh4TXU6-c6VbjpqYMlY-Z50auIYv8`, which is what feeds RUM,
+frontend error tracking, session replay, and anomaly detection with no further
+code.
+
+On top of that the store reports its own journey through
+[`src/lib/heronsignal.ts`](src/lib/heronsignal.ts):
+
+| Event | Fires |
+| ----- | ----- |
+| `cart_item_added` | Add to cart on the catalogue |
+| `checkout_started` | Pay is submitted |
+| `checkout_completed` | Payment succeeded, before the confirmation redirect |
+| `checkout_payment_failed` | Payment threw, with `reason` `card_declined` or `unexpected_error` |
+
+Plus a `warn` log on a handled decline and an `error` log on the broken
+checkout, carrying the active failure mode.
+
+Nothing is recorded until the origin you serve from is allowed in the
+workspace, so add `http://localhost:5173` (and any deployed host) under
+Domains first, or every event is dropped at ingestion.
 
 ## Breaking checkout for the demo
 
