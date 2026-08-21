@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { products, formatUsd, type Product } from '../data/products';
 import { useCart } from '../store/cart';
+import ProductArt from '../components/ProductArt';
 
 function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -15,23 +16,17 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="card">
       <div className="card-media" style={{ background: product.tone }}>
-        <img
-          src={product.image}
-          alt={product.name}
-          loading="lazy"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.visibility = 'hidden';
-          }}
-        />
+        <ProductArt id={product.id} />
+        <span className="card-price">{formatUsd(product.price)}</span>
       </div>
       <div className="card-body">
-        <div className="card-row">
-          <h3>{product.name}</h3>
-          <span className="price">{formatUsd(product.price)}</span>
-        </div>
+        <h3>{product.name}</h3>
         <p className="muted">{product.blurb}</p>
-        <button className="btn btn-quiet" onClick={onAdd}>
-          {added ? 'Added ✓' : 'Add to cart'}
+        <button
+          className={`btn btn-add${added ? ' is-added' : ''}`}
+          onClick={onAdd}
+        >
+          {added ? 'Added to cart ✓' : 'Add to cart'}
         </button>
       </div>
     </article>
