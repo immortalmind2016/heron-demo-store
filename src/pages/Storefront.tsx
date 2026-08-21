@@ -6,6 +6,7 @@ import ProductArt from '../components/ProductArt';
 function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
 
   const onAdd = () => {
     add(product.id);
@@ -16,7 +17,17 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="card">
       <div className="card-media" style={{ background: product.tone }}>
-        <ProductArt id={product.id} />
+        {imgFailed ? (
+          <ProductArt id={product.id} />
+        ) : (
+          <img
+            className="card-photo"
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+          />
+        )}
         <span className="card-price">{formatUsd(product.price)}</span>
       </div>
       <div className="card-body">
